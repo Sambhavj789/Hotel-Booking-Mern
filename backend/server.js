@@ -1,0 +1,36 @@
+const dotenv = require("dotenv");
+dotenv.config();
+const express = require("express");
+const connectToDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
+const cors = require("cors");
+const upload = require("./config/upload");
+const cookieParser = require("cookie-parser");
+
+connectToDB();
+const app = express();
+
+// using global middlewares
+app.use(cors({
+    origin: "*",
+    credentials: true
+})) // for allowing request from diffrent server 
+
+app.use(express.json()); // for parsing json data
+app.use(cookieParser()); //for parsing cookies
+
+app.get("/test", (req, res) => {
+    res.send("Server is working...");
+})
+app.post("/upload/test", upload.single("filename"), (req, res) => {
+    res.send("Working");
+})
+
+// using auth routes
+app.use("/api/v1/auth", authRoutes);
+
+
+const PORT = process.env.PORT || 4400;
+app.listen(PORT, () => {
+    console.log(`Server Is Running On http://localhost:${PORT}`);
+})

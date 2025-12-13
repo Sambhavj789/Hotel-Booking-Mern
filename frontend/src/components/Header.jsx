@@ -1,21 +1,31 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Header.css";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { RxCross2 } from "react-icons/rx";
-import { useContext, useState } from "react";
-import { UserContext } from "../context/UserContext"
+import { useContext, useEffect, useState } from "react";
+import { UserDataContext } from "../context/UserContext"
+import defaultAvatar from "../assets/default-avatar-image.png";
 function Header() {
     let tabs = [
         { link: "/", label: "Home" },
-        { link: "/hotel", label: "Hotels" },
+        { link: "/hotels", label: "Hotels" },
         { link: "/contact", label: "Contact" },
         { link: "/about", label: "About" }
     ];
 
+    const navigate = useNavigate();
+
     // using userContext
-    const user = useContext(UserContext);
-    
+    const { user } = useContext(UserDataContext);
+    console.log(user);
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
+    useEffect(() => {
+        document.addEventListener("click", () => {
+            setIsAvatarMenuOpen(false)
+        })
+    }, [])
     return (
         <>
             <header>
@@ -31,7 +41,40 @@ function Header() {
                     </ul>
                 </nav>
                 <div id="btns">
-                    <button>Login</button>
+                    {
+                        user ?
+                            <div id="after-login-user">
+                                <div id="avatar"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        setIsAvatarMenuOpen(!isAvatarMenuOpen)
+                                    }}>
+                                    <img src={defaultAvatar} alt={user?.name + " 's  profile-image"} />
+                                </div>
+                                {
+                                    isAvatarMenuOpen && <div id="after-login-nav">
+                                        <h4>Welcome {user?.name}</h4>
+                                        <ul>
+                                            <li>
+                                                <Link to="/my-bookings">My-Bookings</Link>
+                                            </li>
+                                            {
+                                                user?.isOwner ?
+                                                    <li><Link to="/setup-hotel">Setup Hotel</Link></li>
+                                                    : <li>
+                                                        <Link to="/register-hotel">Register Hotel</Link>
+                                                    </li>
+                                            }
+                                            <li>Logout</li>
+                                        </ul>
+                                    </div>
+                                }
+                            </div>
+                            :
+                            <button onClick={() => {
+                                navigate("/login");
+                            }}>Login</button>
+                    }
                 </div>
 
                 {/* Mobile nav  */}
@@ -42,7 +85,6 @@ function Header() {
                         <GiHamburgerMenu className="menu-btn" />}
                 </div>
             </header>
-
             {/* Mobile navbar  */}
             {isMenuOpen && <div id="mobile-nav-container">
                 <ul>
@@ -55,7 +97,9 @@ function Header() {
                     }
                 </ul>
                 <div id="mobile-nav-btn">
-                    <button>Login</button>
+                    <button onClick={() => {
+                        navigate("/login");
+                    }}>Login</button>
                 </div>
             </div>}
         </>
