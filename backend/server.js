@@ -3,6 +3,8 @@ dotenv.config();
 const express = require("express");
 const connectToDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
+const hotelRoutes = require("./routes/hotelRoutes");
+const roomRoutes = require("./routes/roomRoutes");
 const cors = require("cors");
 const upload = require("./config/upload");
 const cookieParser = require("cookie-parser");
@@ -28,7 +30,8 @@ app.post("/upload/test", upload.single("filename"), (req, res) => {
 
 // using auth routes
 app.use("/api/v1/auth", authRoutes);
-
+app.use("/api/v1/hotels",hotelRoutes);
+app.use("/api/v1/room",roomRoutes);
 
 const PORT = process.env.PORT || 4400;
 app.listen(PORT, () => {

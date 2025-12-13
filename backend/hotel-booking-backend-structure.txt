@@ -114,6 +114,7 @@ PUT    /api/hotel/:id               # Update hotel (only after login)
 
 
 Room Routes
+GET /room/:hotelId
 POST /api/room                      # Creates new room
 PUT /api/room/:id 
 DELETE /api/room/:id 
