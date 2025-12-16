@@ -1,10 +1,14 @@
+import CustomerReviews from "../components/CustomerReviews";
+import FeaturedHotels from "../components/FeaturedHotels";
 import Hero from "../components/Hero";
+import PopularDestinations from "../components/PopularDestinations";
 
-function Home(){
+function Home() {
     return <div>
-        <Hero/>
-        <Hero/>
-
+        <Hero />
+        <PopularDestinations />
+        <FeaturedHotels />
+        <CustomerReviews/>
     </div>
 }
 

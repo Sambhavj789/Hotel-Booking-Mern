@@ -26,6 +26,7 @@
     position: relative;
     width: 100%;
     max-width: 800px;
+    animation: startAni 0.5s ease;
 }
 
 #hero-content>h1 {
@@ -109,3 +110,5 @@
         margin: auto;
     }
 }
+
+    
