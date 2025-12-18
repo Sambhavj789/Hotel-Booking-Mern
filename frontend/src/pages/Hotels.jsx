@@ -4,8 +4,12 @@ import hotelsData from "../assets/hotels";
 import HotelCard from "../components/HotelCard";
 import "./Hotels.css"
 import Filters from "../components/Filters";
+import { useContext } from "react";
+import { HotelDataProvider } from "../context/HotelsDataContext";
 function Hotels() {
-    let pages = 4;
+    const { hotels, page,pagination } = useContext(HotelDataProvider);
+    let pages = pagination?.totalPages;
+    let currentPage = pagination?.page;
     return (
         <>
             <HotelsHero />
@@ -14,7 +18,7 @@ function Hotels() {
                 <Filters />
                 <div className="hotels-grid-container">
                     <div className="hotels-header">
-                        <h2 className="number-of-hotels">100 Results Found</h2>
+                        <h2 className="number-of-hotels">{pagination?.total} Results Found</h2>
                         <div className="hotels-sort">
                             <label htmlFor="sort-hotels">Sort Hotels</label>
                             <select className="sort-hotels">
@@ -28,7 +32,7 @@ function Hotels() {
 
                     <div className="hotels-card-container">
                         {
-                            hotelsData.map((hotel, index) => {
+                            hotels.map((hotel, index) => {
                                 return <HotelCard data={hotel} key={index} />
                             })
                         }

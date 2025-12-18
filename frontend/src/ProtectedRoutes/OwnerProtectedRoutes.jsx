@@ -3,11 +3,14 @@ import { UserDataContext } from "../context/UserContext"
 import { Navigate } from "react-router-dom";
 
 function OwnerProtectedRoutes({ children }) {
-    const { user } = useContext(UserDataContext);
-    if (user?.isOwner) {
-        return children
+    const { user,loading } = useContext(UserDataContext);
+    if(loading){
+        return <h1>Loading....</h1>
     }
-    return <Navigate to="/" />
+    if (!user || !user?.isOwner) {
+        return <Navigate to="/" />
+    }
+    return children
 }
 
 export default OwnerProtectedRoutes;

@@ -4,16 +4,17 @@ import { FaLocationDot } from "react-icons/fa6";
 function HotelCard({ data }) {
     // console.log(data);
     const navigate = useNavigate();
+    const Image_Base_Url = "http://localhost:4400/";
     return (
         <div id="hotel-card">
             <div id="hotel-image">
-                <img src={data.image} alt={data.name} />
+                <img src={Image_Base_Url + data.images[0]} alt={data.name} />
                 <div id="hotel-category">{data.category}</div>
             </div>
             <div id="hotel-data">
                 <div id="hotel-location">
-                    <FaLocationDot/>
-                    <span>{data.location}</span>
+                    <FaLocationDot />
+                    <span>{data.address}</span>
                 </div>
                 <div id="hotel-name">
                     <span>{data.name}</span>
@@ -22,12 +23,12 @@ function HotelCard({ data }) {
                     <span>{data.rating}</span>
                 </div>
                 <div id="hotel-price">
-                    <p>₹{data.pricePerNight}</p>
+                    <p>₹{data.price}</p>
                     <span>/night</span>
                 </div>
                 <div id="hotel-book-btn">
-                    <button onClick={()=>{
-                        navigate(`/hotel/${data.id}`)
+                    <button onClick={() => {
+                        navigate(`/hotel/${data._id}`)
                     }}>Book Now</button>
                 </div>
             </div>

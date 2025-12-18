@@ -16,7 +16,7 @@ function Header() {
     const navigate = useNavigate();
 
     // using userContext
-    const { user } = useContext(UserDataContext);
+    const { user, logout } = useContext(UserDataContext);
     console.log(user);
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -65,7 +65,7 @@ function Header() {
                                                         <Link to="/register-hotel">Register Hotel</Link>
                                                     </li>
                                             }
-                                            <li>Logout</li>
+                                            <li onClick={logout}>Logout</li>
                                         </ul>
                                     </div>
                                 }

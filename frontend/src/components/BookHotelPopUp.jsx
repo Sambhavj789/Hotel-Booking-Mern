@@ -6,7 +6,7 @@ import StayDetailsSections from "./Pop-Up-Sections/StayDetailsSections";
 import PaymentSection from "./Pop-Up-Sections/PaymentSection";
 
 function BookHotelPopUp() {
-    const { setIsPopUpOpen, currBookingDetails } = useContext(HotelDetailsDataProvider);
+    const { setIsPopUpOpen, currBookingDetails,bookHotel } = useContext(HotelDetailsDataProvider);
     const sections = [<PersonalSection />, <StayDetailsSections />, <PaymentSection />];
     const [currentSection, setCurrentSections] = useState(0);
     const hotel = currBookingDetails?.hotel;
@@ -14,6 +14,9 @@ function BookHotelPopUp() {
     function handleNextClick() {
         if (currentSection != sections.length - 1) {
             setCurrentSections(currentSection + 1)
+        }
+        else{
+            bookHotel()
         }
     }
     function handlePrevClick() {

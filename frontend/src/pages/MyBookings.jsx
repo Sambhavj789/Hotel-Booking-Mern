@@ -1,6 +1,61 @@
 import "./MyBookings.css";
 import demoBookingData from "../assets/demo_booking_details";
+import { useContext, useEffect, useState } from "react";
+import api from "../api/api";
+import { UserDataContext } from "../context/UserContext"
 function MyBookings() {
+    const [bookings, setBookings] = useState([]);
+    const { user, loading } = useContext(UserDataContext);
+    async function getData() {
+        try {
+            const res = await api.get(`/bookings/user/${user.id}`);
+            setBookings(res?.data?.data);
+        }
+        catch (err) {
+            console.log(err);
+            alert(err?.response?.data?.message || "Inernal Server Error");
+        }
+    }
+
+    async function cancelBooking(id) {
+        try {
+            const res = await api.put(`/bookings/cancel/${id}`);
+            if(res.status == 200){
+                alert("Booking Cancelled");
+            }
+        }
+        catch (err) {
+            console.log(err);
+            alert(err?.response?.data?.message || "Inernal Server Error");
+        }
+    }
+    useEffect(() => {
+        if (!loading) {
+            getData();
+        }
+    }, [loading])
+
+    function getBookingAction(status,id) {
+        if (status == "pending" || status == "confirmed") {
+            return <div className="my-booking-action">
+                <div className="my-booking-action-btn cancel-booking" onClick={()=>cancelBooking(id)}>
+                    <span>Cancel Booking</span>
+                </div>
+            </div>
+        }
+        else if(status == "cancelled"){
+            return <div className="my-booking-action">
+                <div className="canceled-booking">
+                    <span>Cancelled</span>
+                </div>
+            </div>
+        }
+        return <div className="my-booking-action">
+            <div className="my-booking-action-btn write-review">
+                <span>Write Review</span>
+            </div>
+        </div>
+    }
     return (
         <section className="my-bookings-main">
             <div className="my-bookings-header">
@@ -21,17 +76,17 @@ function MyBookings() {
 
             <div className="my-bookings-container">
                 {
-                    demoBookingData.map((data, index) => {
+                    bookings.map((data, index) => {
                         return <div className="my-booking-card" key={index}>
                             <div className="my-booking-card-header">
                                 <div className="my-booking-hotel-name">
-                                    <h2>Hotel Name</h2>
+                                    <h2>{data?.hotel_id?.name}</h2>
                                     <div className="hotel-location">
-                                        <span>Hotel Location</span>
+                                        <span>{data?.hotel_id?.address}</span>
                                     </div>
                                 </div>
                                 <div className="booking-id">
-                                    <span>Booking Id: {data?.id.substring(0, 8)}</span>
+                                    <span>Booking Id: {data?._id.substring(0, 8)}</span>
                                 </div>
                             </div>
                             <div className="my-booking-card-info">
@@ -45,7 +100,7 @@ function MyBookings() {
                                 </div>
                                 <div>
                                     <span>Book Date</span>
-                                    <span>{data?.created_at}</span>
+                                    <span>{data?.createdAt}</span>
                                 </div>
                                 <div>
                                     <span>Number Of Guests</span>
@@ -53,7 +108,7 @@ function MyBookings() {
                                 </div>
                                 <div>
                                     <span>Room Name</span>
-                                    <span>room name</span>
+                                    <span>{data?.room_id?.name}</span>
                                 </div>
                                 <div>
                                     <span>Payment Status</span>
@@ -62,13 +117,9 @@ function MyBookings() {
                             </div>
                             <div className="my-booking-card-footer">
                                 <div className="my-booking-price">
-                                    <span>₹1400</span>
+                                    <span>{data?.final_amount}</span>
                                 </div>
-                                <div className="my-booking-action">
-                                    <div className="write-review">
-                                        <span>Write Review</span>
-                                    </div>
-                                </div>
+                                {getBookingAction(data?.status,data._id)}
                             </div>
                         </div>
                     })

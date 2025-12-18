@@ -55,6 +55,9 @@
     background-color: var(--light);
     padding: 5px;
 }
+.profile-image-input>input{
+    background-color: transparent;
+}
 
 .profile-image-input {
     grid-column: 1/3;

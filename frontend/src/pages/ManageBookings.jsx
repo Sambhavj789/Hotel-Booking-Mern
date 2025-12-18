@@ -1,11 +1,17 @@
 import "./ManageBookings.css";
 import demoBookingsData from "../assets/demo_booking_details";
 import { RxCross2 } from "react-icons/rx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "../api/api";
+import { useContext } from "react";
+import { UserDataContext } from "../context/UserContext"
 
 function ManageBookings() {
     // console.log(demoBookingsData)
     const [isPopUpOpen, setIsPopUpOpen] = useState(false);
+    const [data, setData] = useState([]);
+    const { user } = useContext(UserDataContext);
+    const [currentBooking, setCurrentBooking] = useState(-1);
     function bookingStatusClass(status) {
         if (status == "confirmed" || status == "success") {
             return "status-confirmed"
@@ -20,6 +26,32 @@ function ManageBookings() {
             return "status-pending"
         }
     }
+    async function getData() {
+        try {
+            const res = await api.get(`/bookings/hotel/${user.hotel}`);
+            setData(res?.data?.data);
+        }
+        catch (err) {
+            console.log(err);
+            alert(err?.response?.data?.message || "Internal Server Error");
+        }
+    }
+    async function updateBookingStatus(status,id) {
+        try {
+            const res = await api.put(`/bookings/${id}`,{status});
+            if(res.status == 200 || res.status == 201){
+                alert("Booking Updated Successfully");
+            }
+        }
+        catch (err) {
+            console.log(err);
+            alert(err?.response?.data?.message || "Internal Server Error");
+        }
+    }
+    useEffect(() => {
+        getData();
+    }, [])
+
     return (
         <>
             {isPopUpOpen && <div className="manage-bookings-pop-up">
@@ -34,56 +66,84 @@ function ManageBookings() {
                     <div className="manage-booking-grid">
                         <div className="manage-bookings-columns">
                             <span className="manage-booking-column-label">Booking Id</span>
-                            <span className="manage-booking-column-value">Booking Id</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]._id}</span>
                         </div>
                         <div className="manage-bookings-columns">
-                            <span className="manage-booking-column-label">Booking Id</span>
-                            <span className="manage-booking-column-value">Booking Id</span>
+                            <span className="manage-booking-column-label">User Id</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]?.user_id?._id}</span>
                         </div>
                         <div className="manage-bookings-columns">
-                            <span className="manage-booking-column-label">Booking Id</span>
-                            <span className="manage-booking-column-value">Booking Id</span>
+                            <span className="manage-booking-column-label">User Name</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]?.user_id?.first_name + " "+data[currentBooking]?.user_id?.last_name}</span>
                         </div>
                         <div className="manage-bookings-columns">
-                            <span className="manage-booking-column-label">Booking Id</span>
-                            <span className="manage-booking-column-value">Booking Id</span>
+                            <span className="manage-booking-column-label">User Email</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]?.user_id?.email}</span>
                         </div>
                         <div className="manage-bookings-columns">
-                            <span className="manage-booking-column-label">Booking Id</span>
-                            <span className="manage-booking-column-value">Booking Id</span>
+                            <span className="manage-booking-column-label">User Phone Number</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]?.user_id?.phone}</span>
                         </div>
                         <div className="manage-bookings-columns">
-                            <span className="manage-booking-column-label">Booking Id</span>
-                            <span className="manage-booking-column-value">Booking Id</span>
+                            <span className="manage-booking-column-label">Alternate Phone Number</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]?.alternate_phone_number}</span>
                         </div>
                         <div className="manage-bookings-columns">
-                            <span className="manage-booking-column-label">Booking Id</span>
-                            <span className="manage-booking-column-value">Booking Id</span>
+                            <span className="manage-booking-column-label">Date Of Birth</span>
+                            <span className="manage-booking-column-value">{
+                                data[currentBooking].user_id?.date_of_birth
+                                }</span>
                         </div>
                         <div className="manage-bookings-columns">
-                            <span className="manage-booking-column-label">Booking Id</span>
-                            <span className="manage-booking-column-value">Booking Id</span>
+                            <span className="manage-booking-column-label">Room Name</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]?.room_id?.name}</span>
                         </div>
                         <div className="manage-bookings-columns">
-                            <span className="manage-booking-column-label">Booking Id</span>
-                            <span className="manage-booking-column-value">Booking Id</span>
+                            <span className="manage-booking-column-label">Check In Date</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]?.check_in_date}</span>
                         </div>
                         <div className="manage-bookings-columns">
-                            <span className="manage-booking-column-label">Booking Id</span>
-                            <span className="manage-booking-column-value">Booking Id</span>
+                            <span className="manage-booking-column-label">Check Out Date</span>
+                            <span className="manage-booking-column-value">{data[currentBooking].check_out_date}</span>
+                        </div>
+                        <div className="manage-bookings-columns">
+                            <span className="manage-booking-column-label">Final Amount</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]?.final_amount}</span>
+                        </div>
+                        <div className="manage-bookings-columns">
+                            <span className="manage-booking-column-label">Status</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]?.status}</span>
+                        </div>
+                        <div className="manage-bookings-columns">
+                            <span className="manage-booking-column-label">Payment Status</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]?.payment_status}</span>
+                        </div>
+                        <div className="manage-bookings-columns">
+                            <span className="manage-booking-column-label">Payment Method</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]?.payment_method}</span>
+                        </div>
+                        <div className="manage-bookings-columns">
+                            <span className="manage-booking-column-label">Transaction Id</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]?.transaction_id}</span>
                         </div>
                         <div className="manage-bookings-columns special-requests-column">
                             <span className="manage-booking-column-label">Special Requests</span>
-                            <span className="manage-booking-column-value">Booking Id</span>
+                            <span className="manage-booking-column-value">{data[currentBooking]?.special_requests}</span>
                         </div>
 
 
                     </div>
 
                     <div className="manage-bookings-pop-up-footer">
-                        <button className="confirm-booking-btn">Confirm Booking</button>
-                        <button className="cancel-booking-btn">Cancel Booking</button>
-                        <button className="mark-complete-booking-btn">Mark As Completed</button>
+                        <button className="confirm-booking-btn" onClick={()=>{
+                            updateBookingStatus("confirmed",data[currentBooking]._id)
+                        }}>Confirm Booking</button>
+                        <button className="cancel-booking-btn" onClick={()=>{
+                            updateBookingStatus("cancelled",data[currentBooking]._id)
+                        }}>Cancel Booking</button>
+                        <button className="mark-complete-booking-btn" onClick={()=>{
+                            updateBookingStatus("completed",data[currentBooking]._id)
+                        }}>Mark As Completed</button>
                         <button onClick={() => setIsPopUpOpen(false)} className="close-btn">Close</button>
                     </div>
                 </div>
@@ -121,18 +181,19 @@ function ManageBookings() {
                         </thead>
                         <tbody>
                             {
-                                demoBookingsData.map((bookingData, index) => {
+                                data.map((bookingData, index) => {
                                     return <tr key={index}>
-                                        <td>{bookingData.id.substring(0, 8)}...</td>
-                                        <td>User 1</td>
-                                        <td>Deluxe Room</td>
+                                        <td>{bookingData._id.substring(0, 8)}...</td>
+                                        <td>{bookingData?.user_id?.first_name}</td>
+                                        <td>{bookingData?.room_id?.name}</td>
                                         <td>{bookingData.check_in_date}</td>
                                         <td>{bookingData.check_out_date}</td>
                                         <td>{bookingData.final_amount}</td>
                                         <td><span className={bookingStatusClass(bookingData.status)}>{bookingData.status}</span></td>
                                         <td><span className={bookingStatusClass(bookingData.payment_status)}>{bookingData.payment_status}</span></td>
-                                        <td><button className="view-booking-btn" onClick={()=>{
-                                            setIsPopUpOpen(true)
+                                        <td><button className="view-booking-btn" onClick={() => {
+                                            setIsPopUpOpen(true);
+                                            setCurrentBooking(index);
                                         }}>View</button></td>
                                     </tr>
                                 })

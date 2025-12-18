@@ -1,21 +1,24 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "./Filters.css"
 import { IoStarSharp } from "react-icons/io5";
+import { HotelDataProvider } from "../context/HotelsDataContext";
 function Filters() {
     let locations = ["Gangtok", "Srinagar", "Jaipur", "Manali", "Gulmarg", "Shillong"];
-    let categories = ["Resort", "Luxury", "Cottage", "5-Star", "Budget"];
-    const minPrice = 0;
-    const maxPrice = 100000;
-    const [currPrice,setCurrPrice] = useState(maxPrice/2);
+    let allCategories = ["Resort", "Luxury", "Cottage", "5-Star", "Budget"];
+    const currMinPrice = 0;
+    const currMaxPrice = 100000;
+    const [currPrice, setCurrPrice] = useState(currMaxPrice / 2);
+    const { rating, destinations, categories, minPrice, maxPrice, handleCategoryChange, handleLocationChange,handleRatingChange,handlePriceChange } = useContext(HotelDataProvider);
     return (
         <div className="filters">
             <div className="filter-columns">
                 <h1>Price Range</h1>
-                <input type="range" className="price-range-slider" onChange={(e)=>{
-                    setCurrPrice(e.target.value*maxPrice/100)
-                }}/>
+                <input type="range" className="price-range-slider" onChange={(e) => {
+                    setCurrPrice(e.target.value * currMaxPrice / 100)
+                    handlePriceChange(e.target.value * currMaxPrice / 100)
+                }} />
                 <div className="price-range">
-                    <span>₹{minPrice}</span>
+                    <span>₹{currMinPrice}</span>
                     <span>₹{currPrice}</span>
                 </div>
             </div>
@@ -23,7 +26,7 @@ function Filters() {
                 <h1>Ratings</h1>
                 <div className="filter-column">
                     <div className="filter-options">
-                        <input type="checkbox" />
+                        <input type="checkbox" checked={rating == 5} onChange={()=>handleRatingChange(5)} />
                         <label htmlFor="">
                             <div className="stars-conatiner">
                                 <IoStarSharp />
@@ -35,7 +38,7 @@ function Filters() {
                             5</label>
                     </div>
                     <div className="filter-options">
-                        <input type="checkbox" />
+                        <input type="checkbox" checked={rating == 4} onChange={()=>handleRatingChange(4)} />
                         <label htmlFor="">
                             <div className="stars-conatiner">
                                 <IoStarSharp />
@@ -48,7 +51,7 @@ function Filters() {
                         </label>
                     </div>
                     <div className="filter-options">
-                        <input type="checkbox" />
+                        <input type="checkbox" checked={rating == 3} onChange={()=>handleRatingChange(3)} />
                         <label htmlFor="">
                             <div className="stars-conatiner">
                                 <IoStarSharp />
@@ -65,7 +68,7 @@ function Filters() {
                     {
                         locations.map((location, index) => {
                             return <div className="filter-options" key={index}>
-                                <input type="checkbox" />
+                                <input type="checkbox" checked={destinations.includes((location.toLowerCase()))} onChange={() => { handleLocationChange(location.toLowerCase()) }} />
                                 <label htmlFor="">{location}</label>
                             </div>
                         })
@@ -76,9 +79,9 @@ function Filters() {
                 <h1>Category</h1>
                 <div className="filter-column">
                     {
-                        categories.map((category, index) => {
+                        allCategories.map((category, index) => {
                             return <div className="filter-options" key={index}>
-                                <input type="checkbox" />
+                                <input type="checkbox" checked={categories.includes(category.toLowerCase())} onChange={() => { handleCategoryChange(category.toLowerCase()) }} />
                                 <label htmlFor="">{category}</label>
                             </div>
                         })

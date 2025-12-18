@@ -85,13 +85,21 @@
     color: var(--primary);
     font-weight: 600;
 }
-
-.write-review {
-    font-size: 18px;
+.my-booking-action-btn{
+    font-size: 16px;
     cursor: pointer;
-    background-color: #FFE600;
     padding: 5px 10px;
     border-radius: 10px;
+}
+.write-review {
+    background-color: #FFE600;
+}
+.cancel-booking{
+    background-color: #E11D74;
+    color: #fff;
+}
+.canceled-booking{
+    color: #E11D74;
 }
 
 

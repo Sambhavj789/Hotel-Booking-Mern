@@ -28,7 +28,8 @@
     gap: 20px;
 }
 
-.sidebar-link>a {
+.sidebar-link>a,
+.sidebar-link>div {
     font-size: 20px;
     color: #fff;
     text-decoration: none;

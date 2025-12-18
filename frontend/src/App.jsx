@@ -15,6 +15,7 @@ import UpdateHotelDetails from "./pages/UpdateHotelDetails";
 import ManageRooms from "./pages/ManageRooms";
 import ManageBookings from "./pages/ManageBookings";
 import Register from "./pages/Register";
+import HotelsDataContext from "./context/HotelsDataContext";
 
 function App() {
   const currLocation = useLocation();
@@ -26,7 +27,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/hotels" element={<Hotels />} />
+        <Route path="/hotels" element={
+          <HotelsDataContext>
+            <Hotels />
+          </HotelsDataContext>
+        } />
 
         <Route path="/hotel/:id" element={
           <HotelDetailsContext>

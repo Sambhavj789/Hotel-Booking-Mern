@@ -4,7 +4,7 @@ const Room = require("../models/Room");
 async function getUserBookings(req, res) {
     try {
         const userId = req.params.userId;
-        const allBookings = await Booking.find({ user_id: userId });
+        const allBookings = await Booking.find({ user_id: userId }).populate("hotel_id").populate("room_id");
         res.status(200).send({ success: true, message: "Success", data: allBookings });
     }
     catch (err) {
@@ -98,7 +98,7 @@ async function updateBooking(req, res) {
 async function getHotelBookings(req, res) {
     try {
         const hotelId = req.params.hotelId;
-        const hotelBookings = await Booking.find({ hotel_id: hotelId });
+        const hotelBookings = await Booking.find({ hotel_id: hotelId }).populate("user_id").populate("room_id");
         res.status(200).send({ success: true, message: "Success", data: hotelBookings });
     }
     catch (err) {

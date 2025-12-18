@@ -17,12 +17,14 @@ const app = express();
 
 // using global middlewares
 app.use(cors({
-    origin: "*",
+    origin: "http://localhost:5173",
     credentials: true
 })) // for allowing request from diffrent server 
 
 app.use(express.json()); // for parsing json data
 app.use(cookieParser()); //for parsing cookies
+
+app.use(express.static("uploads/"))
 
 app.get("/test", (req, res) => {
     res.send("Server is working...");

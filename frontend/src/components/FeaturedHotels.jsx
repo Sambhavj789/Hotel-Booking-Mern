@@ -2,7 +2,7 @@ import "./FeaturedHotels.css";
 import HotelCard from "./HotelCard";
 
 // Demo hotels data (will be removed after making backend)
-import featuredHotels from "../assets/hotels";
+import featuredHotels from "../assets/demo_hotels_data";
 function FeaturedHotels() {
     return (
         <section id="featured-hotels">

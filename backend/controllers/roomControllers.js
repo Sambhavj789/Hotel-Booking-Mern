@@ -3,6 +3,9 @@ async function addRoom(req, res) {
     try {
         const data = req.body;
         const image = req.file.filename;
+        if(typeof data.bed_type == "string"){
+            data.bed_type = JSON.parse(data.bed_type)
+        }
         const newRoom = new Room({ ...data, image: image });
         await newRoom.save();
         res.status(201).send({ success: true, message: "Room Added Successfully" });
@@ -20,6 +23,9 @@ async function updateRoom(req, res) {
         const newFile = req.file?.filename;
         const existingFile = req.body?.existingFile;
         const image = newFile || existingFile;
+        if(typeof data.bed_type == "string"){
+            data.bed_type = JSON.parse(data.bed_type)
+        }
         await Room.findByIdAndUpdate(roomId, { ...data, image: image })
         res.status(200).send({ success: true, message: "Room Updated Successfully" });
     }

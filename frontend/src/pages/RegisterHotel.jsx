@@ -1,93 +1,182 @@
 import { useState } from "react";
+import api from "../api/api"
 import "./RegisterHotel.css";
 function RegisterHotel() {
     const [images, setImages] = useState([]);
+    const [data, setData] = useState({
+        name: "",
+        description: "",
+        address: "",
+        city: "",
+        state: "",
+        country: "",
+        category: "",
+        star_rating: "",
+        images: [],
+        contact_email: "",
+        contact_phone: "",
+        check_in_time: "",
+        check_out_time: "",
+        price: "",
+        policies: { cancellation: "", pets: false },
+    });
+    function handleChange(e) {
+        const label = e.target.name;
+        let value;
+        if (label == "profile_picture_url") {
+            value = e.target.files[0];
+        }
+        else {
+            value = e.target.value;
+        }
+        setData({ ...data, [label]: value });
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        try {
+            const formData = new FormData();
+            for (let i in data) {
+                if (i == "policies") { 
+                    formData.append(i, JSON.stringify(data[i]));
+                }
+                else if(i=="images"){
+                    for(let image of images){
+                        formData.append("images",image);
+                    }
+                }
+                else {
+                    formData.append(i, data[i]);
+                }
+            }
+            const res = await api.post("/hotels/hotel", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
+            if (res.status == 201) {
+                alert("Hotel Registered Successfully");
+            }
+        }
+        catch (err) {
+            alert(err?.response?.data?.message || "Internal Server Error");
+            console.log(err);
+        }
+        setData({
+            name: "",
+            description: "",
+            address: "",
+            city: "",
+            state: "",
+            country: "",
+            category: "",
+            star_rating: "",
+            images: [],
+            contact_email: "",
+            contact_phone: "",
+            check_in_time: "",
+            check_out_time: "",
+            price: "",
+            policies: { cancellation: "", pets: false },
+        })
+        setImages([])
+    }
+
     function handleImageChange(e) {
         console.log(e.target.files);
         let currImages = e.target.files;
-        const temp = [...images,...currImages];
+        const temp = [...images, ...currImages];
         setImages(temp);
+        setData({ ...data, images: temp })
     }
+
     function handleRemoveImage(index) {
-        setImages(images.filter((_, ix) => ix != index))
+        const temp = images.filter((_, ix) => ix != index)
+        setImages()
+        setData({ ...data, images: temp })
+
     }
+
     return (
         <div className="register-hotel-form-container">
-            <form className="register-hotel-form">
+            <form className="register-hotel-form" onSubmit={handleSubmit}>
                 <h1>Register Your Hotel</h1>
                 <div className="register-hotel-form-section">
                     <h2>Basic Details</h2>
                     <div className="register-hotel-column">
-                        <label htmlFor="">Hotel Name</label>
-                        <input type="text" />
+                        <label htmlFor="name">Hotel Name</label>
+                        <input type="text" name="name" value={data.name} onChange={handleChange} id="name" />
                     </div>
                     <div className="register-hotel-column">
-                        <label htmlFor="">Hotel Category</label>
-                        <select>
-                            <option value="">Select Hotel Category</option>
-                            <option value="">Option</option>
-                            <option value="">Option</option>
-                            <option value="">Option</option>
-                            <option value="">Option</option>
+                        <label htmlFor="category">Hotel Category</label>
+                        <select name="category" value={data.category} onChange={handleChange} id="category">
+                            <option value="" hidden>Select Hotel Category</option>
+                            <option value="resort">Resort</option>
+                            <option value="luxury">Luxury</option>
+                            <option value="cottage">Cottage</option>
+                            <option value="5-star">5-star</option>
+                            <option value="budget">Budget</option>
 
                         </select>
                     </div>
                     <div className="register-hotel-column">
-                        <label htmlFor="">Hotel Average Price</label>
-                        <input type="number" />
+                        <label htmlFor="price">Hotel Average Price</label>
+                        <input type="number" name="price" value={data.price} onChange={handleChange} id="price" />
                     </div>
                     <div className="register-hotel-column">
-                        <label htmlFor="">Hotel Description</label>
-                        <textarea></textarea>
+                        <label htmlFor="description">Hotel Description</label>
+                        <textarea value={data.description} name="description" id="description" onChange={handleChange}></textarea>
                     </div>
                 </div>
                 <div className="register-hotel-form-section">
                     <h2>Location Details</h2>
                     <div className="register-hotel-column">
-                        <label htmlFor="">City</label>
-                        <input type="text" />
+                        <label htmlFor="city">City</label>
+                        <input type="text" value={data.city} name="city" onChange={handleChange} id="city" />
                     </div>
                     <div className="register-hotel-column">
-                        <label htmlFor="">State</label>
-                        <input type="text" />
+                        <label htmlFor="state">State</label>
+                        <input type="text" value={data.state} name="state" onChange={handleChange} />
                     </div>
                     <div className="register-hotel-column">
-                        <label htmlFor="">Country</label>
-                        <input type="text" />
+                        <label htmlFor="country">Country</label>
+                        <input type="text" name="country" value={data.country} onChange={handleChange} id="country" />
                     </div>
                     <div className="register-hotel-column">
-                        <label htmlFor="">Full Address</label>
-                        <textarea></textarea>
+                        <label htmlFor="address">Full Address</label>
+                        <textarea name="address" value={data.address} onChange={handleChange} id="address"></textarea>
                     </div>
                 </div>
                 <div className="register-hotel-form-section">
                     <h2>Hotel Facts</h2>
                     <div className="register-hotel-column">
-                        <label htmlFor="">Check-In Time</label>
-                        <input type="time" />
+                        <label htmlFor="check_in_time">Check-In Time</label>
+                        <input type="time" value={data.check_in_time} name="check_in_time" onChange={handleChange} id="check_in_time" />
                     </div>
                     <div className="register-hotel-column">
-                        <label htmlFor="">Check-Out Time</label>
-                        <input type="time" />
+                        <label htmlFor="check_out_time">Check-Out Time</label>
+                        <input type="time" value={data.check_out_time} name="check_out_time" id="check_out_time" onChange={handleChange} />
                     </div>
                     <div className="register-hotel-column">
-                        <label htmlFor="">Contact Email</label>
-                        <input type="email" />
+                        <label htmlFor="contact_email">Contact Email</label>
+                        <input type="email" value={data.contact_email} name="contact_email" id="contact_email" onChange={handleChange} />
                     </div>
                     <div className="register-hotel-column">
-                        <label htmlFor="">Contact Phone</label>
-                        <input type="number" />
+                        <label htmlFor="contact_phone">Contact Phone</label>
+                        <input type="number" value={data.contact_phone} name="contact_phone" id="contact_phone" onChange={handleChange} />
                     </div>
                 </div>
                 <div className="register-hotel-form-section">
                     <h2>Policies</h2>
                     <div className="register-hotel-column">
-                        <label htmlFor="">Cancellation Policy</label>
-                        <textarea></textarea>
+                        <label htmlFor="cancellation">Cancellation Policy</label>
+                        <textarea value={data.policies.cancellation} onChange={(e) => {
+                            setData({ ...data, policies: { ...data.policies, cancellation: e.target.value } })
+                        }} id="cancellation"></textarea>
                     </div>
                     <div className="register-hotel-pet-section">
-                        <input type="checkbox" />
-                        <label htmlFor="">Pets Allowed</label>
+                        <input type="checkbox" onChange={(e) => {
+                            setData({ ...data, policies: { ...data.policies, pets: e.target.value } })
+                        }} id="pets-allowed" value={data.policies.pets} />
+                        <label htmlFor="pets-allowed">Pets Allowed</label>
                     </div>
                 </div>
                 <div className="register-hotel-form-section">

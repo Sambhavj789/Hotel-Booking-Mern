@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Hotel = require("../models/Hotel");
 
 //getting secret key from env file
 const jwt_secret = process.env.JWT_SECRET_KEY || "secret";
@@ -89,9 +90,14 @@ function logout(req, res) {
         res.status(500).send({ success: false, message: "Internal Server Error" })
     }
 }
-function getMe(req,res) {
+async function getMe(req,res) {
     try {
         const userData = req.user;
+        let hotel;
+        if(userData.role == "hotel-manager"){
+            const hotelData = await Hotel.findOne({created_by:userData._id});
+            hotel = hotelData._id;
+        }
         res.status(200).send({
             success: true,
             message: "Success",
@@ -101,7 +107,9 @@ function getMe(req,res) {
                 role: userData.role,
                 phone: userData.phone,
                 profile_picture_url: userData.profile_picture_url,
-                date_of_birth: userData.date_of_birth
+                date_of_birth: userData.date_of_birth,
+                hotel: hotel,
+                email: userData.email
             }
         });
     }

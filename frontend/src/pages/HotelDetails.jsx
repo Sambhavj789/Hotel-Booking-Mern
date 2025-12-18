@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import "./HotelDetails.css";
 import demoHotels from "../assets/demo_hotels_data";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IoStarSharp } from "react-icons/io5";
 import { LuUsers } from "react-icons/lu";
 import { FaBed } from "react-icons/fa";
@@ -9,18 +9,40 @@ import { FaRegMap } from "react-icons/fa";
 import BookHotelPopUp from "../components/BookHotelPopUp";
 import { UserDataContext } from "../context/UserContext";
 import { HotelDetailsDataProvider } from "../context/HotelDetailsContext";
+import api from "../api/api";
 
 function HotelDetails() {
     const { id } = useParams();
-    const hotelData = demoHotels[0];
+    // const hotelData = demoHotels[0];
+    const [hotelData, setHotelData] = useState({});
+    const [loading, setLoading] = useState(true);
     const { user } = useContext(UserDataContext);
+    const Image_Base_Url = "http://localhost:4400/";
+    async function getData() {
+        try {
+            const res = await api.get(`/hotels/hotel/${id}`);
+            if (res.status == 200) {
+                console.log(res.data.data)
+                setHotelData(res?.data?.data);
+                setLoading(false);
+            }
+        }
+        catch (err) {
+            console.log(err);
+            alert(err?.response?.data?.message || "Internal Server Error");
+        }
+    }
+    useEffect(() => {
+        getData();
+    }, [])
+
     //hotel facts array
     const hotelFacts = [
         { key: "Contact Email", value: hotelData.contact_email },
         { key: "Contact Phone", value: hotelData.contact_phone },
         { key: "Check-In Time", value: hotelData.check_in_time },
         { key: "Check-Out Time", value: hotelData.check_out_time },
-        { key: "Pets Allowed", value: hotelData.policies.pets ? "Yes" : "No" }
+        { key: "Pets Allowed", value: hotelData?.policies?.pets ? "Yes" : "No" }
     ]
 
     function getBedNames(bed_types) {
@@ -43,9 +65,19 @@ function HotelDetails() {
         }
         setCurrBookingDetails({ hotel: hotelData, roomIndex: roomIndex })
         setIsPopUpOpen(true);
+        console.log(roomData)
+        setUserBookingData({
+            ...userBookingData, user_id: user.id, hotel_id: hotelData._id, room_id: roomData._id,
+            total_amount: roomData.base_price,
+            tax_amount: roomData.base_price * 0.18,
+            final_amount: roomData.base_price * 1.18
+        })
     }
     const [selectedImage, setSelectedImage] = useState(0);
-    const { isPopupOpen, setIsPopUpOpen, currBookingDetails, setCurrBookingDetails } = useContext(HotelDetailsDataProvider)
+    const { isPopupOpen, setIsPopUpOpen, currBookingDetails, setCurrBookingDetails, setUserBookingData, userBookingData } = useContext(HotelDetailsDataProvider)
+    if (loading) {
+        return <h1>Loading...</h1>
+    }
     return (
         <>
             {/* Hotel Booking Pop Up Code  */}
@@ -55,13 +87,13 @@ function HotelDetails() {
                 <div className="hotel-details">
                     <div className="hotel-images">
                         <div className="main-image">
-                            <img src={hotelData.images[selectedImage]} alt="" />
+                            <img src={Image_Base_Url + hotelData?.images[selectedImage]} alt="" />
                         </div>
                         <div className="images-card-container">
                             {
                                 hotelData?.images?.map((hotelImage, index) => {
                                     return <div className={`image-card ${index == selectedImage && "selected"}`} key={index} onClick={() => { setSelectedImage(index) }}>
-                                        <img src={hotelImage} alt="" />
+                                        <img src={Image_Base_Url + hotelImage} alt="" />
                                     </div>
                                 })
                             }
@@ -113,7 +145,7 @@ function HotelDetails() {
                             hotelData?.rooms?.map((roomData, index) => {
                                 return <div className="room-card" key={index}>
                                     <div className="room-image">
-                                        <img src={roomData.image} alt="" />
+                                        <img src={Image_Base_Url + roomData.image} alt="" />
                                     </div>
                                     <div className="room-details">
                                         <div className="room-header">
