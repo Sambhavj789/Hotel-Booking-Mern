@@ -17,7 +17,7 @@ function HotelDetails() {
     const [hotelData, setHotelData] = useState({});
     const [loading, setLoading] = useState(true);
     const { user } = useContext(UserDataContext);
-    const Image_Base_Url = "http://localhost:4400/";
+    const Image_Base_Url = import.meta.env.VITE_API_BASE_URL;
     async function getData() {
         try {
             const res = await api.get(`/hotels/hotel/${id}`);

@@ -12,7 +12,7 @@ import { UserDataContext } from "../context/UserContext"
 import { useContext } from "react";
 function ManageRooms() {
     const hotelData = demoHotels[0];
-    const Image_Base_Url = "http://localhost:4400/"
+    const Image_Base_Url = import.meta.env.VITE_API_BASE_URL;
     const [isPopUpOpen, setIsPopUpOpen] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [existingFile, setExistingFile] = useState("");

@@ -7,7 +7,7 @@ function UpdateHotelDetails() {
     const { user } = useContext(UserDataContext)
     const [images, setImages] = useState([]);
     const [existingImages,setExistingImages] = useState([]);
-    const Image_Base_Url = "http://localhost:4400/"
+    const Image_Base_Url = import.meta.env.VITE_API_BASE_URL;
     const [data, setData] = useState({
         name: "",
         description: "",

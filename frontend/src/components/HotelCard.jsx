@@ -4,7 +4,7 @@ import { FaLocationDot } from "react-icons/fa6";
 function HotelCard({ data }) {
     // console.log(data);
     const navigate = useNavigate();
-    const Image_Base_Url = "http://localhost:4400/";
+    const Image_Base_Url = import.meta.env.VITE_API_BASE_URL;
     return (
         <div id="hotel-card">
             <div id="hotel-image">
