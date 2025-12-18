@@ -16,10 +16,21 @@ connectToDB();
 const app = express();
 
 // using global middlewares
+const allowedOrigins = process.env.FRONTEND_URLS.split(",");
+
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true
-})) // for allowing request from diffrent server 
+}));
+// for allowing request from diffrent server 
 
 app.use(express.json()); // for parsing json data
 app.use(cookieParser()); //for parsing cookies
