@@ -11,7 +11,7 @@ async function registerHotel(req, res) {
         }
         const userData = req.user;
         const newHotel = new Hotel({
-            ...data, images: images, created_by: userData._id
+            ...data, images: images, created_by: userData._id,star_rating: 3
         })
         await newHotel.save();
         await User.findByIdAndUpdate(userData._id, { role: "hotel-manager" });
@@ -28,6 +28,9 @@ async function updateHotel(req, res) {
         const data = req.body;
         const existingImages = Array.isArray(req.body?.existingImages) ? req.body.existingImages : [];
         const newImages = req?.files?.map((file) => file.filename);
+        if(!data.star_rating){
+            data.star_rating = 3;
+        }
         const images = [...existingImages, ...newImages];
         if (typeof data.policies == "string") {
             data.policies = JSON.parse(data.policies);
