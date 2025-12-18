@@ -28,9 +28,10 @@ async function updateHotel(req, res) {
         const data = req.body;
         const existingImages = Array.isArray(req.body?.existingImages) ? req.body.existingImages : [];
         const newImages = req?.files?.map((file) => file.filename);
-        if(!data.star_rating){
+        if(!(typeof data.star_rating == "number")){
             data.star_rating = 3;
         }
+        // console.log(data)
         const images = [...existingImages, ...newImages];
         if (typeof data.policies == "string") {
             data.policies = JSON.parse(data.policies);
