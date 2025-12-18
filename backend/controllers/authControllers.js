@@ -54,7 +54,8 @@ async function login(req, res) {
         const token = jwt.sign({ userId: userData._id }, jwt_secret, { expiresIn: "7d" });
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
+            sameSite: process.env.MODE == "production" ? "none" : "lax",
+            secure: process.env.MODE == "production",
             maxAge: 1000 * 60 * 60 * 24 * 2
         })
         res.status(200).send({
@@ -90,12 +91,12 @@ function logout(req, res) {
         res.status(500).send({ success: false, message: "Internal Server Error" })
     }
 }
-async function getMe(req,res) {
+async function getMe(req, res) {
     try {
         const userData = req.user;
         let hotel;
-        if(userData.role == "hotel-manager"){
-            const hotelData = await Hotel.findOne({created_by:userData._id});
+        if (userData.role == "hotel-manager") {
+            const hotelData = await Hotel.findOne({ created_by: userData._id });
             hotel = hotelData._id;
         }
         res.status(200).send({
